@@ -1,18 +1,20 @@
-# Основные функции для генерации JSON-ответов реализуйте в отдельном модуле
-# views.py
-# Данные для анализа и вывода на веб-страницах — это данные с начала месяца, на который выпадает входящая дата,
-# по входящую дату.
-# Если дата —
-# 20.05.2020
-# , то данные для анализа будут в диапазоне
-# 01.05.2020-20.05.2020
-# Валюты и акции для отображения на веб-страницах задаются в отдельном файле пользовательских настроек
-# user_settings.json
-# Пример:
-# {
-#   "user_currencies": ["USD", "EUR"],
-#   "user_stocks": ["AAPL", "AMZN", "GOOGL", "MSFT", "TSLA"]
-# }
-# Для получения данных о валютах и ценах на акции используйте библиотеку
-# requests
-# Сервисы, предоставляющие API для курса валют и цен на акции, подберите самостоятельно.
+import json
+from datetime import datetime
+from typing import Any, Dict
+
+from src.utils import get_date_period, get_path_and_period, get_time_for_greeting
+
+
+def main_info(date_time: str) -> Dict[str, Any]:
+    """функцию, принимающую на вход строку с датой и временем в формате YYYY-MM-DD HH:MM:SS и
+    возвращающую JSON-ответ
+    2020-05-20 12:12:12"""
+
+    greeting = get_time_for_greeting()
+    date_period = get_date_period(date_time)
+
+    sorted_df = get_path_and_period("../data/operations.xlsx", date_period)
+    data = {"greeting": greeting}
+    print("sorted_df")
+    json_data = json.dumps(data, ensure_ascii=False, indent=4)
+    return json_data
