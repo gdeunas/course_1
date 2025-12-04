@@ -5,6 +5,7 @@ from src.utils import (
     get_currency,
     get_date_period,
     get_path_and_period,
+    get_stock_prices,
     get_time_for_greeting,
     get_top_transactions,
 )
@@ -33,13 +34,17 @@ def main_info(date_time: str) -> str:
 
     # 4. Курс валют
     # currency_rates
-    currency_rats = get_currency()
-    print(currency_rats)
+    currencies_rates = get_currency("../user_settings.json")
+
+    # 5. S&P500 stock prices
+    stock_prices = get_stock_prices("../user_settings.json")
 
     data = {
         "greeting": greeting,
         "cards": cards,
         "top_transactions": top_transactions,
+        "currency_rates": currencies_rates,
+        "stock_prices": stock_prices,
     }
 
     json_data = json.dumps(data, ensure_ascii=False, indent=4)

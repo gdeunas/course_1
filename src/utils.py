@@ -1,7 +1,18 @@
+import json
+import os
 from datetime import datetime
 
 import pandas as pd
+import requests as requests
+from dotenv import load_dotenv
 from pandas import DataFrame
+
+load_dotenv()
+
+EXCHANGE_RATE_API_KEY = os.getenv("EXCHANGE_RATE_API_KEY")
+URL = f"https://v6.exchangerate-api.com/v6/{EXCHANGE_RATE_API_KEY}/latest/RUB"
+
+STOCKS_API_KEY = os.getenv("STOCKS_API_KEY")
 
 
 def get_time_for_greeting() -> str:
@@ -97,6 +108,40 @@ def get_top_transactions(sorted_df: DataFrame, top: int) -> list[dict]:
     return top_pay_transactions
 
 
-def get_currency() -> str:
-    """Курс вавлюты"""
-    return ""
+def get_currency(path_to_json: str) -> list[dict]:
+    """Принимает json и возвращает курс валюты"""
+    with open(path_to_json, "r", encoding="utf-8") as file:
+        data = json.load(file)
+        currencies = data["user_currencies"]
+        currencies_list = []
+        for currency in currencies:
+            params = {"conversion_rates": currency}
+
+            response = requests.request("GET", URL, data=params)
+            status_code = response.status_code
+            if status_code == 200:
+                result = response.json()
+                currency_response = result["conversion_rates"][params["conversion_rates"]]
+                rate = round(1 / currency_response, 2)
+                currencies_list.append({"currency": f'{params["conversion_rates"]}', "rate": rate})
+    return currencies_list
+
+
+def get_stock_prices(path_to_json: str) -> list[dict]:
+    """Get stock prices"""
+    with open(path_to_json, "r", encoding="utf-8") as file:
+        data = json.load(file)
+        stocks = data["user_stocks"]
+        stocks_list = []
+        for stock in stocks:
+            url_stocks = f'https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&' \
+                         f'symbol={stock}&interval=5min&apikey={STOCKS_API_KEY}'
+
+            response = requests.get(url_stocks)
+            status_code = response.status_code
+            if status_code == 200:
+                result = response.json()
+                stocks_response = result["Time Series (5min)"]["2025-12-03 19:55:00"]["1. open"]
+                stock_price = round(float(stocks_response), 2)
+                stocks_list.append({"stock": f'{stock}', "price": stock_price})
+    return stocks_list
