@@ -134,14 +134,19 @@ def get_stock_prices(path_to_json: str) -> list[dict]:
         stocks = data["user_stocks"]
         stocks_list = []
         for stock in stocks:
-            url_stocks = f'https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&' \
-                         f'symbol={stock}&interval=5min&apikey={STOCKS_API_KEY}'
+            # url_stocks = (
+            #     f"https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&"
+            #     f"symbol={stock}&interval=5min&apikey={STOCKS_API_KEY}"
+            # )
+            url_stocks =(
+                f"https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol={stock}&apikey={STOCKS_API_KEY}"
+            )
 
             response = requests.get(url_stocks)
             status_code = response.status_code
             if status_code == 200:
                 result = response.json()
-                stocks_response = result["Time Series (5min)"]["2025-12-03 19:55:00"]["1. open"]
+                stocks_response = result["Global Quote"]["05. price"]
                 stock_price = round(float(stocks_response), 2)
-                stocks_list.append({"stock": f'{stock}', "price": stock_price})
+                stocks_list.append({"stock": f"{stock}", "price": stock_price})
     return stocks_list
