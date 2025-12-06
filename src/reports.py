@@ -252,7 +252,7 @@ def save_report(filename: Optional[str] = None) -> Callable:
 
     def decorator(func: Callable) -> Callable:
         @wraps(func)
-        def wrapper(*args, **kwargs) -> Any:
+        def wrapper(*args: Any, **kwargs: Any) -> Any:
             result_df = func(*args, **kwargs)
             if result_df.empty:
                 logger.warning(f"Пустой DataFrame от {func.__name__}")
@@ -260,8 +260,8 @@ def save_report(filename: Optional[str] = None) -> Callable:
             report_data = {
                 # "Категория": kwargs.get('category', f'{result_df["Категория"]}'),
                 "Категория": result_df["Категория"][0],
-                "Дата операции": result_df["Дата платежа"].dt.strftime('%Y-%m-%d').tolist(),
-                "Сумма операции": result_df["Сумма операции"].abs().tolist()
+                "Дата операции": result_df["Дата платежа"].dt.strftime("%Y-%m-%d").tolist(),
+                "Сумма операции": result_df["Сумма операции"].abs().tolist(),
             }
             if filename is None:
                 timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
@@ -274,7 +274,7 @@ def save_report(filename: Optional[str] = None) -> Callable:
             filepath = os.path.join("reports", output_file)
 
             try:
-                with open(filepath, 'w', encoding='utf-8') as f:
+                with open(filepath, "w", encoding="utf-8") as f:
                     json.dump(report_data, f, ensure_ascii=False, indent=4)
 
                 total_sum = sum(report_data["Сумма операции"])
@@ -283,7 +283,9 @@ def save_report(filename: Optional[str] = None) -> Callable:
             except Exception as e:
                 logger.error(f"Ошибка сохранения {func.__name__}: {e}")
             return result_df
+
         return wrapper
+
     return decorator
 
 
@@ -313,9 +315,9 @@ def spending_by_category(transactions: pd.DataFrame, category: str, date: Option
     logger.info(f"Период анализа: {start_date.date()} - {target_date.date()}")
 
     mask = (
-            (transactions["Дата платежа"] >= start_date) &
-            (transactions["Дата платежа"] <= target_date) &
-            (transactions["Категория"] == category)
+        (transactions["Дата платежа"] >= start_date)
+        & (transactions["Дата платежа"] <= target_date)
+        & (transactions["Категория"] == category)
     )
 
     filtered = transactions[mask].copy()
