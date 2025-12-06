@@ -1,6 +1,7 @@
 import json
 import os
 from datetime import datetime
+from typing import Any
 
 import pandas as pd
 import requests as requests
@@ -50,8 +51,8 @@ def get_path_and_period(path_to_file: str, period_date: list[str]) -> DataFrame:
     return sorted_df
 
 
-def get_cards(sorted_df: DataFrame) -> list[dict]:
-    """Вывод данных карт {ХХХХ...}"""
+def get_cards(sorted_df: DataFrame) -> list[dict[str, Any]]:
+    """Returns list of card transaction dicts with last digits, total spent, cashback."""
     cards_transactions = []
     cards_sorted = sorted_df[
         [
@@ -62,23 +63,20 @@ def get_cards(sorted_df: DataFrame) -> list[dict]:
         ]
     ]
     for index, row in cards_sorted.iterrows():
-        # print(index, row)
         if row["Сумма операции"] < 0:
             last_digits = str(row["Номер карты"]).replace("*", "")
             total_spent = row["Сумма операции с округлением"]
-            # cashback = row['Кэшбэк']
             cashback = total_spent // 100
-            row = {
+            transaction = {
                 "last_digits": last_digits,
                 "total_spent": total_spent,
                 "cashback": cashback,
             }
-
-            cards_transactions.append(row)
+            cards_transactions.append(transaction)
     return cards_transactions
 
 
-def get_top_transactions(sorted_df: DataFrame, top: int) -> list[dict]:
+def get_top_transactions(sorted_df: DataFrame, top: int) -> list[dict[str, Any]]:  # -> list[dict]:
     """Топ 5 транзакции по сумме платежа"""
     top_pay_transactions = []
     sorted_pay_df = sorted_df.sort_values(by="Сумма операции", ascending=False)
@@ -93,16 +91,11 @@ def get_top_transactions(sorted_df: DataFrame, top: int) -> list[dict]:
         ]
     ]
     for index, row in top_pay_transactions_sorted.iterrows():
-        # print(row)
-        top_date = row["Дата платежа"]
-        top_amount = row["Сумма операции"]
-        top_category = row["Категория"]
-        top_description = row["Описание"]
         transaction = {
-            "date": top_date,
-            "amount": top_amount,
-            "category": top_category,
-            "description": top_description,
+            "date": row["Дата платежа"],
+            "amount": row["Сумма операции"],
+            "category": row["Категория"],
+            "description": row["Описание"],
         }
         top_pay_transactions.append(transaction)
     return top_pay_transactions
@@ -134,14 +127,9 @@ def get_stock_prices(path_to_json: str) -> list[dict]:
         stocks = data["user_stocks"]
         stocks_list = []
         for stock in stocks:
-            # url_stocks = (
-            #     f"https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&"
-            #     f"symbol={stock}&interval=5min&apikey={STOCKS_API_KEY}"
-            # )
             url_stocks = (
                 f"https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol={stock}&apikey={STOCKS_API_KEY}"
             )
-
             response = requests.get(url_stocks)
             status_code = response.status_code
             if status_code == 200:

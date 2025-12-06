@@ -1,5 +1,5 @@
-import json
 from datetime import datetime
+from typing import Any
 
 import pandas as pd
 
@@ -16,7 +16,7 @@ def get_path_and_period(path_to_file: str, period_date: list[str]) -> pd.DataFra
     return sorted_df
 
 
-def analyze_cashback(file_path: str, year: int, month: int) -> dict[str, int]:
+def analyze_cashback(file_path: str, year: int, month: int) -> Any:  # dict[str, int]:
     """Analyze Cashback"""
     df = pd.read_excel(file_path)
     df["Дата операции"] = pd.to_datetime(df["Дата операции"], format="%d.%m.%Y %H:%M:%S")
@@ -29,8 +29,4 @@ def analyze_cashback(file_path: str, year: int, month: int) -> dict[str, int]:
     expenses_by_category = filtered_data.groupby("Категория")["Сумма платежа"].sum()
     cashback_by_category = abs(expenses_by_category) // 100
     result = cashback_by_category.to_dict()
-    # for key, value in result.items():
-    #
-    # print(result)
-    result_end = json.dumps(result, ensure_ascii=False, indent=4)
-    return result_end
+    return result

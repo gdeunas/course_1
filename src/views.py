@@ -10,11 +10,7 @@ from src.utils import (
     get_top_transactions,
 )
 
-# from datetime import datetime
-# from typing import Any, Dict
 
-
-# Dict[str, Any]:
 def main_info(date_time: str) -> str:
     """функцию, принимающую на вход строку с датой и временем в формате YYYY-MM-DD HH:MM:SS и
     возвращающую JSON-ответ
