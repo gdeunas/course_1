@@ -138,7 +138,7 @@ def get_stock_prices(path_to_json: str) -> list[dict]:
             #     f"https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&"
             #     f"symbol={stock}&interval=5min&apikey={STOCKS_API_KEY}"
             # )
-            url_stocks =(
+            url_stocks = (
                 f"https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol={stock}&apikey={STOCKS_API_KEY}"
             )
 
