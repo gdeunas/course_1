@@ -29,7 +29,6 @@ def main_info(date_time: str) -> str:
     top_transactions = get_top_transactions(sorted_df, 5)
 
     # 4. Курс валют
-    # currency_rates
     currencies_rates = get_currency("../user_settings.json")
 
     # 5. S&P500 stock prices
