@@ -81,7 +81,7 @@ def spending_by_category(transactions: pd.DataFrame, category: str, date: Option
     if date is None:
         target_date = datetime.now()
     else:
-        target_date = pd.to_datetime(date, dayfirst=True)
+        target_date = pd.to_datetime(date, dayfirst=False)
 
     # Дата 3 месяца назад
     start_date = target_date - timedelta(days=90)
@@ -108,5 +108,5 @@ def spending_by_category(transactions: pd.DataFrame, category: str, date: Option
 
 if __name__ == "__main__":
     transaction = get_data("../data/operations.xlsx")
-    sbc = spending_by_category(transaction, "Супермаркеты", "1.10.2021")
+    sbc = spending_by_category(transaction, "Супермаркеты", "2021.10.1")
     print(sbc)
