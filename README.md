@@ -26,6 +26,19 @@ poetry add black
 
 python3 main.py
 
+# Об API
+
+1. Переименовать файл ".env.example" в ".env" 
+2. Внести свои параметры API
+
+Пример:
+import requests
+# replace the "demo" apikey below with your own key from https://www.alphavantage.co/support/#api-key
+https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=IBM&apikey=demo
+r = requests.get(url)
+data = r.json()
+print(data)
+
 # Создать html файлы с покрытием
 
 pytest --cov=src --cov-report=html 
