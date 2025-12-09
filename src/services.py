@@ -12,7 +12,6 @@ def get_path_and_period(path_to_file: str, period_date: list[str]) -> pd.DataFra
     end_date = datetime.strptime(period_date[1], "%d.%m.%Y %H:%M:%S")
     filtered_df = df[(start_date <= df["Дата операции"]) & (df["Дата операции"] <= end_date)]
     sorted_df = filtered_df.sort_values(by="Дата операции", ascending=True)
-    # print(sorted_df)
     return sorted_df
 
 
